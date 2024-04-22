@@ -19,6 +19,7 @@ const dbString = process.env.DB_STRING
 const baseURL = process.env.URL_BASE
 
 const authRouter = require('./routers/auth')
+const userRouter = require('./routers/users')
 
 // app.use(bodyParser.json({ limit: '5mb' }))
 app.use(express.json())
@@ -30,6 +31,7 @@ app.use(cookieParser())
 app.use('*', cors())
 
 app.use(`${baseURL}/auth`, authRouter)
+app.use(`${baseURL}/users`, userRouter)
 
 app.use(middleware.errorHandle)
 

@@ -19,8 +19,8 @@ const transporter = nodemailer.createTransport({
 
 router.post(`/register`, async (req, res, next) => {
     try {
-        const { firstName, lastName, email, phoneNumber, password } = req.body
-        if (!(firstName, lastName, email && password && phoneNumber)) throw {name: 'MissingFields'}
+        const { firstName, lastName, email, age, phoneNumber, password } = req.body
+        if (!(firstName, lastName, email, age && password && phoneNumber)) throw {name: 'MissingFields'}
         
         // if (await User.find({email})) {
         //     throw 'DuplicateError'
@@ -29,9 +29,11 @@ router.post(`/register`, async (req, res, next) => {
         let user = new User({
             firstName,
             lastName,
+            age,
             email,
             phoneNumber,
-            password: bcrypt.hashSync(req.body.password, 10),})        
+            password: bcrypt.hashSync(req.body.password, 10),
+        })        
         user = await user.save()
         
         return res.send({
@@ -113,7 +115,11 @@ router.post(`/login`, async (req, res, next) => {
                     secret
                 )
 
-                res.send({user: user.id, token: token})
+                // res.cookie('jwt', token, { httpOnly: true, secure: true });
+                res.send({
+                    status: 'success',
+                    token
+                });            
             }
             else{
                 throw 'ValidationError'
@@ -126,5 +132,6 @@ router.post(`/login`, async (req, res, next) => {
         next(error)
     }
 })
+
 
 module.exports = router
