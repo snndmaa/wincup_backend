@@ -5,6 +5,7 @@ const cors       = require('cors')
 const http       = require('http')
 const WebSocket  = require('ws')
 const cookieParser = require('cookie-parser')
+const path = require('path')
 
 const middleware = require('./middleware')
 const app        = express()
@@ -28,6 +29,9 @@ app.use(cors())
 app.use(middleware.authHandle())
 app.use(cookieParser())
 
+app.use(express.static(path.join(__dirname, 'build')))
+app.use(express.static(path.join(__dirname, 'auth-build')))
+
 app.use('*', cors())
 
 app.use(`${baseURL}/auth`, authRouter)
@@ -37,6 +41,14 @@ app.use(middleware.errorHandle)
 
 app.get('/', (req, res) => {
     res.send('Server Running!')
+})
+
+app.get('/admin', function(req, res) {
+  res.sendFile(path.join(__dirname, './build', 'index.html'));
+})
+
+app.get('/auth', function(req, res) {
+  res.sendFile(path.join(__dirname, './auth-build', 'index.html'));
 })
 
 server.on('upgrade', (request, socket, head) => {

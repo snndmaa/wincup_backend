@@ -19,6 +19,7 @@ const authHandle = () => {
             //TO REMOVE FOR TESTING ONLY!!!
             `${URLBase}/users/`,
             new RegExp(`${URLBase}/users/[a-zA-Z0-9]+`),
+            new RegExp(`/[a-zA-Z0-9]+`),
 
         ]
     })

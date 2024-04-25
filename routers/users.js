@@ -59,10 +59,11 @@ router.post('/', async (req, res, next) => {
 
     } catch (error) {
         if (error.name === 'MongoServerError') {
-            throw 'DuplicateError'
+            next('DuplicateError')
         }
 
-        next(error)    }
+        next(error)    
+    }
 })
 
 router.put('/:id', async (req, res, next) => {
