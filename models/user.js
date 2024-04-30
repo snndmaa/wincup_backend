@@ -2,11 +2,7 @@ const mongoose = require('mongoose')
 
 
 const userSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
+    userName: {
         type: String,
         required: true
     },
@@ -15,15 +11,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    age: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 122
-    },
-    phoneNumber: {
+    gender: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
@@ -32,6 +22,14 @@ const userSchema = new mongoose.Schema({
     verificationToken: {
         type: String,
         default: null
+    },
+    resetPasswordToken: {
+        type: String,
+        default: null,
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null,
     },
     isVerified: {
         type: Boolean,

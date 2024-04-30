@@ -19,19 +19,17 @@ const transporter = nodemailer.createTransport({
 
 router.post(`/register`, async (req, res, next) => {
     try {
-        const { firstName, lastName, email, age, phoneNumber, password } = req.body
-        if (!(firstName, lastName, email, age && password && phoneNumber)) throw {name: 'MissingFields'}
+        const { userName, email, gender,  password } = req.body
+        if (!(userName, email, gender && password )) throw {name: 'MissingFields'}
         
         // if (await User.find({email})) {
         //     throw 'DuplicateError'
         // }
 
         let user = new User({
-            firstName,
-            lastName,
-            age,
+            userName,
             email,
-            phoneNumber,
+            gender,
             password: bcrypt.hashSync(req.body.password, 10),
         })        
         user = await user.save()
@@ -70,7 +68,9 @@ router.post('/send-mail', async (req, res, next) => {
         if (!user) throw'ValidationError'
         
         await transporter.sendMail(mailOptions)
-        res.send('Verification email sent successfully!')
+        res.send({
+            status: 'success'
+        })
     }
     catch (error) {
         next(error)
@@ -130,6 +130,56 @@ router.post(`/login`, async (req, res, next) => {
     }
     catch (error) {
         next(error)
+    }
+})
+
+router.post('/forgot-password', async (req, res, next) => {
+    try {
+        const email = req.body.email
+        const user = await User.findOne({ email })
+
+        if (!user) throw 'NotFound'
+
+        const resetToken = crypto.randomBytes(20).toString('hex')
+
+        user.resetPasswordToken   = resetToken
+        user.resetPasswordExpires = Date.now() + 3600000
+        await user.save()
+
+        const mailOptions = {
+            from: 'your_email@gmail.com',
+            to: email,
+            subject: 'Reset your password',
+            text: `Click the link to reset your password: ${process.env.SERVER_BASE_URL}/reset-password/${resetToken}`,
+        };
+
+        await transporter.sendMail(mailOptions)
+        res.send({
+            status: 'success'
+        })
+
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.get('reset-password/:token', async (req, res, next) => {
+    try {
+        const token = req.params.token
+        const user  = User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        })
+
+        if (!user) throw 'NotFound'
+
+        // Need to do pass change logic here so token 
+        // opening logic should be frontend then main logic hadled here
+
+
+
+    } catch (error) {
+        
     }
 })
 

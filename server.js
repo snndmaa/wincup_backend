@@ -7,6 +7,7 @@ const WebSocket  = require('ws')
 const cookieParser = require('cookie-parser')
 const path = require('path')
 
+
 const middleware = require('./middleware')
 const app        = express()
 const server     = http.createServer(app)
@@ -83,6 +84,7 @@ wss.on('connection', (ws) => {
 mongoose.connect(dbString)
 .then(() => console.log('Database Connected!'))
 .catch( (error) => console.log(error))
+
 
 server.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}`)

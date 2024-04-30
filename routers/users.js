@@ -38,16 +38,15 @@ router.get(`/:id`, async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-    const { firstName, lastName, email, age, password, phoneNumber } = req.body
+    const { userName, email, gender, password, isVerified } = req.body
 
     try {
         let user = User({
-            firstName,
-            lastName,
+            userName,
             email,
-            age,
-            phoneNumber,
+            gender,
             password: bcrypt.hashSync(password, 10),
+            isVerified,
         })
 
         user = await user.save()
@@ -67,17 +66,15 @@ router.post('/', async (req, res, next) => {
 })
 
 router.put('/:id', async (req, res, next) => {
-    const { firstName, lastName, email, age, phoneNumber } = req.body
+    const { userName, email, gender, } = req.body
 
     try {
         const user = await User.findOneAndUpdate(
             {_id: req.params.id},
             {
-                firstName,
-                lastName,
+                userName,
                 email,
-                age,
-                phoneNumber
+                gender,
             },
             {new: true}
         )
