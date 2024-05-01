@@ -4,6 +4,7 @@ const bcrypt     = require('bcryptjs')
 const jwt        = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 const { v4: uuidv4 } = require('uuid')
+const crypto = require('crypto');
 
 const {User} = require('../models/user')
 
@@ -65,7 +66,7 @@ router.post('/send-mail', async (req, res, next) => {
     
     
     try{
-        if (!user) throw'ValidationError'
+        if (!user) throw 'ValidationError'
         
         await transporter.sendMail(mailOptions)
         res.send({
@@ -97,19 +98,19 @@ router.post(`/login`, async (req, res, next) => {
     const secret  = process.env.SECRET
 
     try {
-        const { email, password } = req.body
+        const { userName, password } = req.body
 
-        if (email) {
-            const user    = await User.findOne({email: email})
+        if (userName) {
+            const user    = await User.findOne({ userName })
 
             
             if (!user) {    
                 throw 'NotFound'
             } else if(bcrypt.compareSync(password, user.password)){
-                if (!user.isVerified) throw 'ValidationError'
+                // if (!user.isVerified) throw 'ValidationError'
                 const token = jwt.sign(
                     {
-                        userID: user.id,
+                        userId: user.id,
                         isAdmin: user.isAdmin
                     },
                     secret
@@ -118,7 +119,8 @@ router.post(`/login`, async (req, res, next) => {
                 // res.cookie('jwt', token, { httpOnly: true, secure: true });
                 res.send({
                     status: 'success',
-                    token
+                    token,
+                    id: user.id,
                 });            
             }
             else{
@@ -135,8 +137,8 @@ router.post(`/login`, async (req, res, next) => {
 
 router.post('/forgot-password', async (req, res, next) => {
     try {
-        const email = req.body.email
-        const user = await User.findOne({ email })
+        const userName = req.body.userName
+        const user = await User.findOne({ userName })
 
         if (!user) throw 'NotFound'
 
@@ -147,10 +149,10 @@ router.post('/forgot-password', async (req, res, next) => {
         await user.save()
 
         const mailOptions = {
-            from: 'your_email@gmail.com',
-            to: email,
+            from: 'adaline.weimann80@ethereal.email',
+            to: user.email,
             subject: 'Reset your password',
-            text: `Click the link to reset your password: ${process.env.SERVER_BASE_URL}/reset-password/${resetToken}`,
+            text: `Click the link to reset your password: ${process.env.SERVER_BASE_URL}/auth/reset-password/${resetToken}`,
         };
 
         await transporter.sendMail(mailOptions)
@@ -163,23 +165,27 @@ router.post('/forgot-password', async (req, res, next) => {
     }
 })
 
-router.get('reset-password/:token', async (req, res, next) => {
+router.post('/reset-password/:token', async (req, res, next) => {
     try {
         const token = req.params.token
-        const user  = User.findOne({
+        const { password } = req.body
+
+        const user = await User.findOneAndUpdate({
             resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() }
-        })
+            resetPasswordExpires: { $gt: Date.now() },
+        }, {
+            password: bcrypt.hashSync(password, 10),
+        }, { new: true })
 
         if (!user) throw 'NotFound'
 
-        // Need to do pass change logic here so token 
-        // opening logic should be frontend then main logic hadled here
-
-
+        res.send({
+            status: 'success',
+            user
+        })
 
     } catch (error) {
-        
+        next(error)
     }
 })
 
