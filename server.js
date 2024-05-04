@@ -55,7 +55,7 @@ app.use(middleware.errorHandle)
 //   res.sendFile(path.join(__dirname, './auth-build', 'index.html'));
 // })
 
-app.get('/game', function(req, res) {
+app.get('/games', function(req, res) {
   res.sendFile(path.join(__dirname, './game-build/build', 'index.html'));
 })
 
