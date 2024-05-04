@@ -89,8 +89,8 @@ router.put('/:id', upload.single('picture'), async (req, res, next) => {
     
         const { buffer } = req.file
 
-        const profile = await Profile.findOneAndUpdate(
-            { user: req.params.id },
+        const profile = await Profile.findByIdAndUpdate(
+            req.params.id,
             {
                 picture: buffer
             },
@@ -109,10 +109,10 @@ router.put('/:id', upload.single('picture'), async (req, res, next) => {
 
 })
 
-router.delete*('/:id', verifyAdmin, async (req, res, next) => {
+router.delete('/:id', verifyAdmin, async (req, res, next) => {
     try {
         const profile = await Profile.findByIdAndDelete(req.params.id)
-
+        console.log(profile)
         if (!profile) throw 'NotFound'
 
         res.send({
