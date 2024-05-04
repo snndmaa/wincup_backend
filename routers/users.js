@@ -1,11 +1,13 @@
 const express = require('express')
-const router = express.Router()
 const bcrypt = require('bcryptjs')
 
-const {User} = require('../models/user')
+const { User } = require('../models/user')
+const { verifyAdmin } = require('../middleware')
 
 
-router.get(`/`, async(req, res, next) => {
+const router = express.Router()
+
+router.get(`/`, async (req, res, next) => {
     try {
         const users = await User.find().select('-password -verificationToken')
 
@@ -23,7 +25,8 @@ router.get(`/`, async(req, res, next) => {
 
 router.get(`/:id`, async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id).select('-passwordHash -verificationToken')
+        const user = await User.findById(req.params.id)
+        .select('-passwordHash -verificationToken')
 
         if(!user) throw 'NotFound'
 
@@ -37,16 +40,17 @@ router.get(`/:id`, async (req, res, next) => {
     }
 })
 
-router.post('/', async (req, res, next) => {
-    const { userName, email, gender, password, isVerified } = req.body
+router.post('/', verifyAdmin, async (req, res, next) => {
+    const { userName, email, gender, password, isVerified, isAdmin } = req.body
 
     try {
-        let user = User({
+        let user = new User({
             userName,
             email,
             gender,
             password: bcrypt.hashSync(password, 10),
             isVerified,
+            isAdmin,
         })
 
         user = await user.save()
@@ -65,16 +69,19 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-router.put('/:id', async (req, res, next) => {
-    const { userName, email, gender, } = req.body
+router.put('/:id', verifyAdmin, async (req, res, next) => {
+    const { userName, email, gender, password, isVerified, isAdmin } = req.body
 
     try {
         const user = await User.findOneAndUpdate(
-            {_id: req.params.id},
+            { _id: req.params.id },
             {
                 userName,
                 email,
                 gender,
+                password: bcrypt.hashSync(password, 10),
+                isVerified,
+                isAdmin,
             },
             {new: true}
         )
@@ -90,7 +97,7 @@ router.put('/:id', async (req, res, next) => {
     }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', verifyAdmin, async (req, res, next) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id)
 
