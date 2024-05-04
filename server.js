@@ -33,6 +33,7 @@ app.use(cookieParser())
 
 // app.use(express.static(path.join(__dirname, 'build')))
 // app.use(express.static(path.join(__dirname, 'auth-build')))
+app.use(express.static(path.join(__dirname, 'game-build/build')))
 
 app.use('*', cors())
 
@@ -42,9 +43,9 @@ app.use(`${baseURL}/profiles`, profileRouter)
 
 app.use(middleware.errorHandle)
 
-app.get('/', (req, res) => {
-    res.send('Server Running!')
-})
+// app.get('/', (req, res) => {
+//     res.send('Server Running!')
+// })
 
 // app.get('/admin', function(req, res) {
 //   res.sendFile(path.join(__dirname, './build', 'index.html'));
@@ -53,6 +54,10 @@ app.get('/', (req, res) => {
 // app.get('/auth', function(req, res) {
 //   res.sendFile(path.join(__dirname, './auth-build', 'index.html'));
 // })
+
+app.get('/game', function(req, res) {
+  res.sendFile(path.join(__dirname, './game-build/build', 'index.html'));
+})
 
 server.on('upgrade', (request, socket, head) => {
   const pathname = request.url.split('/');
