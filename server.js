@@ -53,7 +53,7 @@ app.use(middleware.errorHandle)
 
 
 app.get('/admin', function(req, res) {
-  res.sendFile(path.join(__dirname, './admin-build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 })
 
 
