@@ -34,7 +34,7 @@ app.use(middleware.authHandle())
 app.use(cookieParser())
 
 // app.use(express.static(path.join(__dirname, 'game-build')))
-app.use(express.static(path.join(__dirname, 'admin-build')))
+app.use(express.static(path.join(__dirname, 'build')))
 // app.use(express.static(path.join(__dirname, 'auth-build')))
 
 app.use('*', cors())
