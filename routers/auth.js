@@ -10,11 +10,11 @@ const {User} = require('../models/user')
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+    host: 'smtp.mail.yahoo.com',
+    port: 465,
     auth: {
-        user: 'adaline.weimann80@ethereal.email',
-        pass: 'CsnzBNmutNRH6wFRgE'
+        user: 'pkishinyambwe@gmail.com',
+        pass: 'nzcnygbiftlepxyr'
     }
 })
 
@@ -58,7 +58,7 @@ router.post('/send-mail', async (req, res, next) => {
 
     
     const mailOptions = {
-        from: 'adaline.weimann80@ethereal.email',
+        from: 'cup.web44@yahoo.com',
         to: email,
         subject: 'Email Verification',
         text: `Click the following link to verify your email: ${process.env.SERVER_BASE_URL}/auth/verify?token=${verificationToken}`,
