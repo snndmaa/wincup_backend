@@ -15,6 +15,10 @@ const authHandle = () => {
             `${URLBase}/auth/register`,
             `${URLBase}/auth/send-mail`,
             new RegExp(`${URLBase}/auth/verify?[a-zA-Z0-9]+`),
+            // new RegExp(`/games`),
+            `/games/[a-zA-Z0-9]+`,
+            `/`,
+            `/admin/[a-zA-Z0-9]+`,
 
             //TO REMOVE FOR TESTING ONLY!!!
             // `${URLBase}/users/`,

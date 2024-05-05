@@ -23,6 +23,7 @@ const baseURL = process.env.URL_BASE
 const authRouter    = require('./routers/auth')
 const userRouter    = require('./routers/users')
 const profileRouter = require('./routers/profile')
+const certiRouter = require('./routers/certificate')
 
 // app.use(bodyParser.json({ limit: '5mb' }))
 app.use(express.json())
@@ -31,15 +32,16 @@ app.use(cors())
 app.use(middleware.authHandle())
 app.use(cookieParser())
 
+app.use(express.static(path.join(__dirname, 'game-build')))
 app.use(express.static(path.join(__dirname, 'admin-build')))
-// app.use(express.static(path.join(__dirname, 'auth-build')))
-app.use(express.static(path.join(__dirname, 'game-build/build')))
+app.use(express.static(path.join(__dirname, 'auth-build')))
 
 app.use('*', cors())
 
 app.use(`${baseURL}/auth`, authRouter)
 app.use(`${baseURL}/users`, userRouter)
 app.use(`${baseURL}/profiles`, profileRouter)
+app.use(`${baseURL}/certificate`, certiRouter)
 
 app.use(middleware.errorHandle)
 
@@ -47,16 +49,16 @@ app.use(middleware.errorHandle)
 //     res.send('Server Running!')
 // })
 
+app.get('/games', function(req, res) {
+  res.sendFile(path.join(__dirname, './game-build', 'index.html'));
+})
+
 app.get('/admin', function(req, res) {
   res.sendFile(path.join(__dirname, './admin-build', 'index.html'));
 })
 
-// app.get('/auth', function(req, res) {
-//   res.sendFile(path.join(__dirname, './auth-build', 'index.html'));
-// })
-
-app.get('/games', function(req, res) {
-  res.sendFile(path.join(__dirname, './game-build/build', 'index.html'));
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, './auth-build', 'index.html'));
 })
 
 server.on('upgrade', (request, socket, head) => {
